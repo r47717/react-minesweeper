@@ -1,6 +1,9 @@
-import React, {useState} from "react";
+import React from "react";
+import {observer} from "mobx-react";
 import classNames from "classnames";
+
 import './index.css';
+import {MineSweeperState} from "../../store";
 
 export type CellContent = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | '' | 'x';
 
@@ -12,36 +15,37 @@ export interface ICell {
 }
 
 export interface ICellProps {
-    content: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | '' | 'x'
     width: number
     height: number
-    onBoom: Function
-    done: boolean
+    store: MineSweeperState
+    x: number
+    y: number
 }
 
-const Cell: React.FC<ICellProps> = ({content, width, height, onBoom, done}) => {
-    const [actualStatus, setActualStatus] = useState<string>('closed');
+const Cell: React.FC<ICellProps> = observer(({width, height, store, x, y}) => {
+    const {cells, done} = store;
+    const {content, status} = cells[y][x];
 
     const classes = classNames('cell', {
-        closed: !done && actualStatus === 'closed',
-        open: done || actualStatus === 'open',
-        marked: !done && actualStatus === 'marked',
-        boom: (actualStatus === 'open' || done) && content === 'x'
+        closed: !done && status === 'closed',
+        open: done || status === 'open',
+        marked: !done && status === 'marked',
+        boom: (status === 'open' || done) && content === 'x'
     });
 
     const onClickCell = () => {
-        if (actualStatus === 'closed') {
-            setActualStatus('open');
+        if (status === 'closed') {
+            store.setStatus(x, y, 'open');
             if (content === 'x') {
-                onBoom();
+                store.boom();
             }
         }
     };
 
     const onRightClick = (event: any) => {
         event.preventDefault();
-        if (['closed', 'marked'].includes(actualStatus)) {
-            setActualStatus(actualStatusPrev => actualStatusPrev === 'marked' ? 'closed' : 'marked');
+        if (['closed', 'marked'].includes(status)) {
+            store.setStatus(x, y, status === 'marked' ? 'closed' : 'marked');
         }
     };
 
@@ -51,6 +55,6 @@ const Cell: React.FC<ICellProps> = ({content, width, height, onBoom, done}) => {
         onClick={onClickCell}
         onContextMenu={(e) => onRightClick(e)}
     >{content}</div>
-};
+});
 
 export default Cell;
