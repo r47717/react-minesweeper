@@ -1,0 +1,29 @@
+.cell {
+    background: #eeeeee;
+    border-top: 5px solid #ffffff;
+    border-left: 5px solid #ffffff;
+    border-right: 5px solid #aaaaaa;
+    border-bottom: 5px solid #aaaaaa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0;
+}
+
+.cell.closed {
+    cursor: pointer;
+}
+
+.cell.open {
+    font-size: inherit;
+    border: 1px solid #cccccc;
+}
+
+.cell.marked {
+    background: url('./img/flag.png') center / 20px auto no-repeat;
+}
+
+.cell.boom {
+    border: 1px solid red;
+    background: red url('./img/mine.png') center / 20px auto no-repeat;
+}
